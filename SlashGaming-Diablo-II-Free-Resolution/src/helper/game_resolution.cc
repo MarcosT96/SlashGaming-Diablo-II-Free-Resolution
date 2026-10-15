@@ -97,8 +97,18 @@ const std::vector<std::tuple<int, int>>& GetResolutionsFromIpV4(
   // Warning: This needs to be sorted lexicographically!
   static const ::std::array<
       Ipv4ResolutionTableEntry,
-      3
+      4
   > kSortedIpv4ResolutionTable = {{
+
+      // d2-latam.com (sv.d2latam.com)
+      Ipv4ResolutionTableEntry(
+          "129.121.53.43",
+          {
+              resolution_640x480,
+              resolution_800x600,
+              std::make_tuple(1344, 700)
+          }
+      ),
 
       // evnt.slashdiablo.net
       Ipv4ResolutionTableEntry(
