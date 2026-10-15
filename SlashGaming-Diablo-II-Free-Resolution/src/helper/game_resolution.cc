@@ -270,6 +270,17 @@ static const std::vector<Resolution>& GetResolutionsFromIpV4(
             { 1068, 600 }
           }),
 
+      // d2-latam.com (sv.d2latam.com) - 129.121.53.43
+      Ipv4HashResolutionTableEntry(
+          "DE946264EB3B0B2A34D04F6D15C8524CD68E2FA5",
+          {
+            kResolution640x480,
+            kResolution800x600,
+            { 856, 480 },
+            { 1068, 600 },
+            { 1344, 700 }
+          }),
+
       // evnt.slashdiablo.net
       Ipv4HashResolutionTableEntry(
           "E1625F180F649ED2E4C98B4210012B6C52D9361F",
