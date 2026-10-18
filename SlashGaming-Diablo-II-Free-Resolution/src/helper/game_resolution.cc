@@ -280,6 +280,18 @@ const std::vector<std::tuple<int, int>>& GetResolutionsFromIpV4(
           }
       ),
 
+      // d2-latam realm (sv.d2latam.com, 129.121.53.43)
+      Ipv4HashResolutionTableEntry(
+          "DE946264EB3B0B2A34D04F6D15C8524CD68E2FA5",
+          {
+              kResolution640x480,
+              kResolution800x600,
+              std::make_tuple(856, 480),
+              std::make_tuple(1068, 600),
+              std::make_tuple(1344, 700)
+          }
+      ),
+
       // evnt.slashdiablo.net
       Ipv4HashResolutionTableEntry(
           "E1625F180F649ED2E4C98B4210012B6C52D9361F",

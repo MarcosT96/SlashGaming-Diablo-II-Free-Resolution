@@ -1,0 +1,20 @@
+; Module definition file for the SGD2FreeRes mod entry points.
+;
+; The CMake build compiles sgd2fml_mod_exports.cc but does not define
+; SGD2FR_DLLEXPORT for the main target (only the license module exports its
+; symbol directly), so DLLEXPORT expands to nothing and none of the
+; Sgd2fml_Mod_* entry points are exported. Any loader that resolves those
+; entry points by name (instead of relying on DllMain) then receives nulls.
+;
+; Listing them here makes the export table explicit and build-system
+; independent. Names are demangled by MSVC, so the exports are the plain
+; C-linkage names. PrintLicenseNotice is exported by license.h's own
+; __declspec(dllexport) and must not be listed here.
+
+LIBRARY SGD2FreeRes
+
+EXPORTS
+    Sgd2fml_Mod_GetMinRequiredApiVersion
+    Sgd2fml_Mod_OnLoadMpqs
+    Sgd2fml_Mod_OnUnloadMpqs
+    Sgd2fml_Mod_ReloadConfig

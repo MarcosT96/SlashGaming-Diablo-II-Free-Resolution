@@ -9,4 +9,4 @@
 	url = https://github.com/Tencent/rapidjson
 [submodule "external/SlashGaming-Diablo-II-API"]
 	path = external/SlashGaming-Diablo-II-API
-	url = https://github.com/mir-diablo-ii-tools/SlashGaming-Diablo-II-API.git
+	url = https://github.com/MarcosT96/SlashGaming-Diablo-II-API.git
