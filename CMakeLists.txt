@@ -74,6 +74,11 @@ set(SOURCE_FILES
 
     ${CPP_FILES}
     ${NASM_FILES}
+
+    # Exports the Sgd2fml_Mod_* entry points. Without this (or
+    # SGD2FR_DLLEXPORT on this target) the DLL exports nothing and loaders
+    # that resolve the entry points by name get nulls.
+    "${PROJECT_DIR}/resource/sgd2fml_mod_exports.def"
 )
 
 # Output DLL
