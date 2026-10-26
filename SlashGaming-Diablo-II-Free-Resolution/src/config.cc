@@ -201,7 +201,12 @@ constexpr bool kDefaultIs800InterfaceBarEnabled = true;
 std::map<std::string, std::once_flag> once_flags_by_json_keys;
 
 const std::filesystem::path& GetConfigPath() {
-  static std::filesystem::path kConfigPath = "SGD2FreeResolution.json";
+  // D2DX writes its own copies of these files at startup and loads
+  // d2dx_sgd2freeres.dll, so the config it generates is named
+  // d2dx_sgd2freeres.json. The official name here means the DLL never sees
+  // that config; the menu resolution and the offline list silently fall back
+  // to the defaults. Point it at D2DX's name.
+  static std::filesystem::path kConfigPath = "d2dx_sgd2freeres.json";
   return kConfigPath;
 }
 
