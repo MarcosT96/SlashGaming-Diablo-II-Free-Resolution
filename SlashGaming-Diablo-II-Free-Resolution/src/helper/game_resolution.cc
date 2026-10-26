@@ -284,9 +284,9 @@ const std::vector<std::tuple<int, int>>& GetResolutionsFromIpV4(
       Ipv4HashResolutionTableEntry(
           "DE946264EB3B0B2A34D04F6D15C8524CD68E2FA5",
           {
-              kResolution640x480,
-              kResolution800x600,
-              std::make_tuple(856, 480),
+              // Widescreen only, by decision: no 4:3 mode is offered on this
+              // realm. The engine still builds 640x480/800x600 for itself; this
+              // list is what the online path offers.
               std::make_tuple(1068, 600),
               std::make_tuple(1344, 700)
           }
