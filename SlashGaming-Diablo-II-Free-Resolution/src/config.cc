@@ -46,10 +46,12 @@
 #include "config.hpp"
 
 #include <array>
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <mutex>
 #include <string>
+#include <thread>
 
 #include <mdc/error/exit_on_error.hpp>
 #include <mdc/wchar_t/filew.h>
@@ -586,45 +588,63 @@ bool AddMissingConfigEntries(
       kConfigTabWidthKey
   );
 
-  return config_reader.Write(indent_width);
+  // The defaults above are added in memory, and deliberately NOT written back.
+  //
+  // D2DX regenerates this file from its own template on every start, with every
+  // key this mod reads, so the rewrite is redundant - and it is harmful: every
+  // running client reads this config at startup, the file is shared, and writing
+  // it truncates it before a byte is written. A client that parses it inside
+  // that window sees an empty document, fails the read, and stays on the default
+  // 640x480/800x600 list (or dies in the error box) for the rest of its process.
+  // That is the second and later clients of a multi-instance session.
+  (void)indent_width;
+  return true;
 }
 
 mjsoni::RapidJsonConfigReader ReadConfig(
     const std::filesystem::path& config_file_path
 ) {
-  // Read the config file for processing, if all other conditions are good.
-  mjsoni::RapidJsonConfigReader config_reader(config_file_path);
+  // Another client may be replacing this file right now (see
+  // AddMissingConfigEntries), and a file caught mid-swap does not parse: give it
+  // a moment instead of failing the client for the rest of its life. Each
+  // attempt needs a fresh reader: Read() parses into the document it owns.
+  for (int attempt = 0; ; attempt++) {
+    mjsoni::RapidJsonConfigReader config_reader(config_file_path);
 
-  bool is_read = config_reader.Read();
-  if (!is_read) {
-    ::mdc::error::ExitOnGeneralError(
-        L"Error",
-        L"Failed to read config in %ls. The file may be missing read "
-            L"permissions, or the config is not strictly JSON "
-            L"compliant (such as containing a trailing comma after "
-            L"the last resolution entry).",
-        __FILEW__,
-        __LINE__,
-        config_file_path.c_str()
-    );
+    if (config_reader.Read()) {
+      bool is_missing_entry_added = AddMissingConfigEntries(config_reader);
+      if (!is_missing_entry_added) {
+        ::mdc::error::ExitOnGeneralError(
+            L"Error",
+            L"Failed add missing entries to the config in %ls.",
+            __FILEW__,
+            __LINE__,
+            config_file_path.c_str()
+        );
 
-    ::std::exit(0);
+        std::exit(0);
+      }
+
+      return config_reader;
+    }
+
+    if (attempt >= 20) {
+      ::mdc::error::ExitOnGeneralError(
+          L"Error",
+          L"Failed to read config in %ls. The file may be missing read "
+              L"permissions, or the config is not strictly JSON "
+              L"compliant (such as containing a trailing comma after "
+              L"the last resolution entry).",
+          __FILEW__,
+          __LINE__,
+          config_file_path.c_str()
+      );
+
+      ::std::exit(0);
+    }
+
+    ::std::this_thread::sleep_for(::std::chrono::milliseconds(50));
   }
-
-  bool is_missing_entry_added = AddMissingConfigEntries(config_reader);
-  if (!is_missing_entry_added) {
-    ::mdc::error::ExitOnGeneralError(
-        L"Error",
-        L"Failed add missing entries to the config in %ls.",
-        __FILEW__,
-        __LINE__,
-        config_file_path.c_str()
-    );
-
-    std::exit(0);
-  }
-
-  return config_reader;
 }
 
 mjsoni::RapidJsonConfigReader& GetConfigReader() {
